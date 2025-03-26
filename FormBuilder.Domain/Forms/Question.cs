@@ -11,6 +11,7 @@ public class Question : IAuditable
     public bool IsDeleted { get; set; }
     public Guid FormId { get; private init; }
     public Form Form { get; private init; }
+    public List<QuestionOption> Options { get; private set; } = [];
     public DateTime CreatedAt { get; private init; } = DateTime.Now;
     public DateTime ModifiedAt { get; }
     
