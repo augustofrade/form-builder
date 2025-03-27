@@ -13,7 +13,7 @@ public class Question : IAuditable
     public Form Form { get; private init; }
     public List<QuestionOption> Options { get; private set; } = [];
     public DateTime CreatedAt { get; private init; } = DateTime.Now;
-    public DateTime ModifiedAt { get; }
+    public DateTime? ModifiedAt { get; }
     
 
     private Question() { }
