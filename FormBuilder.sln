@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormBuilder.Domain", "FormBuilder.Domain\FormBuilder.Domain.csproj", "{974916AB-4EE0-473D-BDF1-134E57582AB0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormBuilder.API", "FormBuilder.API\FormBuilder.API.csproj", "{3DFEE677-E641-40CA-AC7F-C4091EF70F41}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{974916AB-4EE0-473D-BDF1-134E57582AB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{974916AB-4EE0-473D-BDF1-134E57582AB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{974916AB-4EE0-473D-BDF1-134E57582AB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DFEE677-E641-40CA-AC7F-C4091EF70F41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DFEE677-E641-40CA-AC7F-C4091EF70F41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DFEE677-E641-40CA-AC7F-C4091EF70F41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DFEE677-E641-40CA-AC7F-C4091EF70F41}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
