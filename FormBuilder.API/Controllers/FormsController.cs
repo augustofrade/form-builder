@@ -1,6 +1,6 @@
 using FormBuilder.API.Models.Dto.FormDtos.Create;
 using FormBuilder.API.Service;
-using FormBuilder.Domain.Forms;
+using FormBuilder.API.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FormBuilder.API.Controllers;
@@ -27,6 +27,6 @@ public class FormsController(IFormService formService) : ControllerBase
     public async Task<IActionResult> CreateForm([FromBody] CreateFormDto dto)
     {
         var form = await formService.SaveForm(dto);
-        return Ok(form);
+        return Ok(form.ToDetailsDto());
     }
 }
