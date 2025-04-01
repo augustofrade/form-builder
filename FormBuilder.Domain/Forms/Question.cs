@@ -6,29 +6,41 @@ public class Question : IAuditable
 {
     public Guid Id { get; private init; } = Guid.NewGuid();
     public string Label { get; set; } = string.Empty;
-    public QuestionConstraint Constraints { get; set; }
+    public bool IsRequired { get; private set; }
+    public QuestionConstraint? Constraints { get; set; }
     public QuestionTypes Type { get; private init; }
     public bool IsDeleted { get; set; }
     public Guid FormId { get; private init; }
     public Form Form { get; private init; }
     public List<QuestionOption>? Options { get; private set; }
     public DateTime CreatedAt { get; private init; } = DateTime.Now;
-    public DateTime? ModifiedAt { get; }
+    public DateTime? ModifiedAt { get; set; }
     public List<Answer> Answers { get; private init; } = [];
     
 
     private Question() { }
 
-    private Question(string label, QuestionConstraint constraints, QuestionTypes type)
+    private Question(string label, QuestionTypes type, bool isRequired)
     {
         Label = label;
-        Constraints = constraints;
         Type = type;
+        IsRequired = isRequired;
     }
 
-    public static Question Create(string label, QuestionConstraint constraints, QuestionTypes type)
+    public static Question Create(string label, QuestionTypes type, bool isRequired)
     {
-        return new Question(label, constraints, type);
+        return new Question(label, type, isRequired);
+    }
+
+    public void SetConstraints(QuestionConstraint? constraints)
+    {
+        if (constraints == null)
+            return;
+        
+        if (Type != QuestionTypes.Text && Type != QuestionTypes.TextArea)
+            throw new TypeAccessException("Cannot set constraints for question that is not of text or text area types");
+        
+        Constraints = constraints;
     }
 
     public void AddOption(QuestionOption option)
