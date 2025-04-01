@@ -11,14 +11,21 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
     public DbSet<Submission> Submission => Set<Submission>();
     public DbSet<Answer> Answer => Set<Answer>();
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        base.OnConfiguring(optionsBuilder);
+        optionsBuilder.EnableSensitiveDataLogging();
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        
         modelBuilder.Entity<Question>()
             .OwnsOne(q => q.Constraints);
         modelBuilder.Entity<Question>()
             .HasOne(q => q.Form)
             .WithMany(f => f.Questions)
-            .HasForeignKey(q => q.Id);
+            .HasForeignKey(q => q.FormId); 
 
         modelBuilder.Entity<QuestionOption>()
             .HasOne(o => o.Question)

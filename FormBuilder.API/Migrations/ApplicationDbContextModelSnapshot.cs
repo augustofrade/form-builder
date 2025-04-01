@@ -85,6 +85,7 @@ namespace FormBuilder.API.Migrations
             modelBuilder.Entity("FormBuilder.Domain.Forms.Question", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -105,6 +106,8 @@ namespace FormBuilder.API.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FormId");
+
                     b.ToTable("Question");
                 });
 
@@ -121,6 +124,9 @@ namespace FormBuilder.API.Migrations
                     b.Property<Guid>("QuestionId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("QuestionId1")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -128,6 +134,8 @@ namespace FormBuilder.API.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("QuestionId");
+
+                    b.HasIndex("QuestionId1");
 
                     b.ToTable("QuestionOption");
                 });
@@ -177,7 +185,7 @@ namespace FormBuilder.API.Migrations
                 {
                     b.HasOne("FormBuilder.Domain.Forms.Form", "Form")
                         .WithMany("Questions")
-                        .HasForeignKey("Id")
+                        .HasForeignKey("FormId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -211,13 +219,15 @@ namespace FormBuilder.API.Migrations
 
             modelBuilder.Entity("FormBuilder.Domain.Forms.QuestionOption", b =>
                 {
-                    b.HasOne("FormBuilder.Domain.Forms.Question", "Question")
-                        .WithMany("Options")
+                    b.HasOne("FormBuilder.Domain.Forms.Question", null)
+                        .WithMany()
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Question");
+                    b.HasOne("FormBuilder.Domain.Forms.Question", null)
+                        .WithMany("Options")
+                        .HasForeignKey("QuestionId1");
                 });
 
             modelBuilder.Entity("FormBuilder.Domain.Forms.Submission", b =>
