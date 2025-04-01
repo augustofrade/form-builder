@@ -7,4 +7,5 @@ public class CreateFormDto
     public IEnumerable<CreateQuestionDto> Questions { get; init; }
     
     public bool HasQuestions => Questions.Any();
+    
 }
