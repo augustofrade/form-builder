@@ -15,16 +15,17 @@ public class Form : IAuditable
 
     private Form() { }
 
-    private Form(string title, string description)
+    private Form(string title, string description, IEnumerable<Question> questions)
     {
         Title = title;
         Description = description;
+        Questions = questions.ToList();
         PublicId = CreatePublicId();
     }
     
-    public static Form Create(string title, string description)
+    public static Form Create(string title, string description, IEnumerable<Question> questions)
     {
-        return new Form(title, description);
+        return new Form(title, description, questions);
     }
 
     private string CreatePublicId()

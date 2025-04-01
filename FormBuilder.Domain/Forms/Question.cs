@@ -33,6 +33,9 @@ public class Question : IAuditable
 
     public void AddOption(QuestionOption option)
     {
+        if (Type != QuestionTypes.Radio && Type != QuestionTypes.Checkbox && Type != QuestionTypes.Select)
+            throw new TypeAccessException("Cannot add options to a question that is not of checkbox, radio or select types");
+        
         Options ??= [];
         Options.Add(option);
     }
