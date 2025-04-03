@@ -9,6 +9,7 @@ public class Form : IAuditable
     public Guid Id { get; private init; } = Guid.NewGuid();
     public string PublicId { get; private init; }
     public string Title { get; set; }
+    // TODO: make this optional
     public string Description { get; set; }
     public DateTime CreatedAt { get; private init; } = DateTime.Now;
     public DateTime? ModifiedAt { get; set; }
@@ -34,5 +35,11 @@ public class Form : IAuditable
     {
         var options = new GenerationOptions(useSpecialCharacters: false, length: 8);
         return ShortId.Generate(options);
+    }
+
+    public void Update(string title, string description)
+    {
+        Title = title;
+        Description = description;
     }
 }
