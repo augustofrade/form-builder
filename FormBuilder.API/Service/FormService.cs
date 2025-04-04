@@ -1,3 +1,4 @@
+using FormBuilder.API.Commands.Forms;
 using FormBuilder.API.Models.Dto.FormDtos;
 using FormBuilder.API.Models.Dto.FormDtos.Create;
 using FormBuilder.API.Models.Dto.FormDtos.Update;
@@ -15,7 +16,10 @@ public interface IFormService
     Task<Form> UpdateForm(Guid formId, UpdateFormDto updateDto);
 } 
 
-public class FormService(ApplicationDbContext db) : IFormService
+public class FormService(
+    ApplicationDbContext db,
+    IUpdateFormCommandHandler updateFormCommandHandler
+    ) : IFormService
 {
     public Task<List<FormDto>> GetForms()
     {
@@ -104,51 +108,9 @@ public class FormService(ApplicationDbContext db) : IFormService
         {
             throw new Exception($"Form with id {formId} not found");
         }
-        form.Update(updateDto.Title, updateDto.Description);
-        var deletedQuestions = new HashSet<Guid>();
-        if (updateDto.HasQuestionsToDelete)
-        {
-            foreach (var questionId in updateDto.QuestionsToDelete!)
-            {
-                var question = form.Questions.FirstOrDefault(q => q.Id == questionId);
-                if (question == null) continue;
-                question.IsDeleted = true;
-                deletedQuestions.Add(question.Id);
-            }
-        }
-
-        if (updateDto.HasQuestionsToUpdate)
-        {
-            foreach (var questionToUpdate in updateDto.QuestionsToUpdate!)
-            {
-                if (deletedQuestions.Contains(questionToUpdate.Id))
-                    continue;
-                
-                var question = form.Questions.FirstOrDefault(q => q.Id == questionToUpdate.Id);
-                if (question == null)
-                    continue;
-                
-                // TODO: make optional parameters on Dto & entity Update method
-                question.Update(questionToUpdate.Label, questionToUpdate.IsRequired);
-                if (!questionToUpdate.HasOptions)
-                    continue;
-
-                var optionsDict = question.Options!.GroupBy(e => e.Id)
-                    .ToDictionary(
-                        g => g.Key,
-                        e => e.First()
-                    );
-                ;
-                foreach (var optionToUpdate in questionToUpdate.Options!)
-                {
-                    var option = optionsDict[optionToUpdate.Id];
-                    if (option == null)
-                        continue;
-
-                    option.Update(optionToUpdate.Value, optionToUpdate.Label);
-                }
-            }
-        }
+        
+        updateFormCommandHandler.Handle(form, updateDto);
+        
         await db.SaveChangesAsync();
         return form;
     }
