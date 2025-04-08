@@ -110,6 +110,13 @@ public class FormService(
         }
         
         updateFormCommandHandler.Handle(form, updateDto);
+        // EF wouldn't automatically track new question and options... had to do it manually. 
+        form.Questions.ForEach(q =>
+        {
+            if (q.FormId != Guid.Empty) return;
+            db.Entry(q).State = EntityState.Added;
+            q.Options?.ForEach(o => db.Entry(o).State = EntityState.Added);
+        });
         
         await db.SaveChangesAsync();
         return form;
