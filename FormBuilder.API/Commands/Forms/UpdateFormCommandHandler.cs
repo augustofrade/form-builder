@@ -24,6 +24,8 @@ public class UpdateFormCommandHandler : IUpdateFormCommandHandler
         {
             HandleUpdateQuestions(form, updateDto, deletedQuestions);
         }
+        
+        // TODO: create question creation logic
 
         return true;
     }
@@ -34,7 +36,7 @@ public class UpdateFormCommandHandler : IUpdateFormCommandHandler
         {
             var question = form.Questions.FirstOrDefault(q => q.Id == questionId);
             if (question == null) continue;
-            question.IsDeleted = true;
+            question.MarkAsDeleted();
             deletedQuestions.Add(question.Id);
         }
     }
@@ -76,6 +78,7 @@ public class UpdateFormCommandHandler : IUpdateFormCommandHandler
                 questionOption.Update(currentOption.Value, currentOption.Label);
                 continue;
             }
+            // TODO: Create option deletion
             var newOption = QuestionOption.Create(currentOption.Value, currentOption.Label);
             question.AddOption(newOption);
         }

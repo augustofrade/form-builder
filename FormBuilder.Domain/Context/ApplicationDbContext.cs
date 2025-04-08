@@ -27,11 +27,11 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
             .WithMany(f => f.Questions)
             .HasForeignKey(q => q.FormId); 
 
-        // TODO: change WithMany to OwnsMany
         modelBuilder.Entity<QuestionOption>()
             .HasOne(o => o.Question)
             .WithMany(q => q.Options)
-            .HasForeignKey(o => o.QuestionId);
+            .HasForeignKey(o => o.QuestionId)
+            .OnDelete(DeleteBehavior.Cascade);
         
         modelBuilder.Entity<Submission>()
             .HasOne<Form>(s => s.Form)

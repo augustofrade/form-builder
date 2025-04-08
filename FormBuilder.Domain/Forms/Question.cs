@@ -9,7 +9,7 @@ public class Question : IAuditable
     public bool IsRequired { get; private set; }
     public QuestionConstraint? Constraints { get; set; }
     public QuestionTypes Type { get; private init; }
-    public bool IsDeleted { get; set; }
+    public bool IsDeleted { get; private set; }
     public Guid FormId { get; private init; }
     public Form Form { get; private init; }
     public List<QuestionOption>? Options { get; private set; }
@@ -47,6 +47,11 @@ public class Question : IAuditable
             throw new TypeAccessException("Cannot set constraints for question that is not of text or text area types");
         
         Constraints = constraints;
+    }
+
+    public void MarkAsDeleted()
+    {
+        IsDeleted = true;
     }
 
     public void AddOption(QuestionOption option)

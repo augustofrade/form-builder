@@ -1,3 +1,4 @@
+using FormBuilder.API.Commands.Forms;
 using FormBuilder.API.Service;
 using FormBuilder.Domain.Context;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 builder.Services.AddScoped<IFormService, FormService>();
+builder.Services.AddScoped<IUpdateFormCommandHandler, UpdateFormCommandHandler>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
