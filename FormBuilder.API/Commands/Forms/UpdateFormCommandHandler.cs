@@ -92,15 +92,31 @@ public class UpdateFormCommandHandler : IUpdateFormCommandHandler
     {
         // TODO: make optional parameters on Dto & entity Update method
         question.Update(questionToUpdate.Label, questionToUpdate.IsRequired);
-        
-        if (!questionToUpdate.HasOptions)
-            return;
 
+        if (question.Type != QuestionTypes.Checkbox &&
+            question.Type != QuestionTypes.Radio &&
+            question.Type != QuestionTypes.Select)
+            return;
+        
         var optionsDict = question.Options!.GroupBy(e => e.Id)
             .ToDictionary(
                 g => g.Key,
                 e => e.First()
             );
+        
+        if (questionToUpdate.HasOptionsToDelete)
+        {
+            foreach (var optionId in questionToUpdate.OptionsToDelete!)
+            {
+                if (!optionsDict.TryGetValue(optionId, out var optionToRemove))
+                    continue;
+                if(question.RemoveOption(optionToRemove) && questionToUpdate.HasOptions)
+                    questionToUpdate.Options!.RemoveAll(x => x.Id == optionId);
+            }
+        }
+        
+        if (!questionToUpdate.HasOptions)
+            return;
         
         foreach (var currentOption in questionToUpdate.Options!)
         {
@@ -110,7 +126,6 @@ public class UpdateFormCommandHandler : IUpdateFormCommandHandler
                 questionOption.Update(currentOption.Value, currentOption.Label);
                 continue;
             }
-            // TODO: Create option deletion
             var newOption = QuestionOption.Create(currentOption.Value, currentOption.Label);
             question.AddOption(newOption);
         }
