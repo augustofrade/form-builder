@@ -10,13 +10,11 @@ public interface ISubmissionService
     Task<Submission> Create(CreateSubmissionDto createDto);
 }
 
-public class SubmissionService(ApplicationDbContext db) : ISubmissionService
+public class SubmissionService(ApplicationDbContext db, IFormService formService) : ISubmissionService
 {
     public async Task<Submission> Create(CreateSubmissionDto createDto)
     {
-        var form = await db.Form
-            .Include(f => f.Questions)
-            .ThenInclude(q => q.Options)
+        var form = await formService.FormAggregate
             .SingleOrDefaultAsync(f => f.Id == createDto.FormId)
             ?? throw new NullReferenceException($"Form with id {createDto.FormId} not found");
         

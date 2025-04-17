@@ -5,11 +5,13 @@ using FormBuilder.API.Models.Dto.FormDtos.Update;
 using FormBuilder.Domain.Context;
 using FormBuilder.Domain.Forms;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace FormBuilder.API.Service;
 
 public interface IFormService
 {
+    IIncludableQueryable<Form, List<QuestionOption>?> FormAggregate { get; }
     Task<List<FormDto>> GetForms();
     Task<FormDetailsDto?> GetForm(Guid id);
     Task<Form> SaveForm(CreateFormDto createDto);
@@ -21,6 +23,12 @@ public class FormService(
     IUpdateFormCommandHandler updateFormCommandHandler
     ) : IFormService
 {
+
+    public IIncludableQueryable<Form, List<QuestionOption>?> FormAggregate => 
+        db.Form
+            .Include(f => f.Questions)
+            .ThenInclude(q => q.Options);
+    
     public Task<List<FormDto>> GetForms()
     {
         return db.Form
@@ -36,9 +44,7 @@ public class FormService(
 
     public Task<FormDetailsDto?> GetForm(Guid id)
     {
-        return db.Form
-            .Include(f => f.Questions)
-            .ThenInclude(q => q.Options)
+        return FormAggregate
             .Select(f => new FormDetailsDto
             {
                 Id = f.Id,
@@ -100,9 +106,7 @@ public class FormService(
 
     public async Task<Form> UpdateForm(Guid formId, UpdateFormDto updateDto)
     {
-        var form = await db.Form
-            .Include(f => f.Questions)
-            .ThenInclude(q => q.Options)
+        var form = await FormAggregate
             .FirstOrDefaultAsync(f => f.Id == formId);
         if (form == null)
         {
