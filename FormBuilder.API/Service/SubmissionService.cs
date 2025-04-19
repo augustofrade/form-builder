@@ -19,20 +19,24 @@ public class SubmissionService(ApplicationDbContext db, IFormService formService
             ?? throw new NullReferenceException($"Form with id {createDto.FormId} not found");
         
         var answers = new List<Answer>();
-        foreach (var question in form.Questions)
+
+        var answerQuestionIds = new HashSet<Guid>();
+        foreach (var answerDto in createDto.Answers)
         {
-            if (question.IsDeleted) continue;
-            
-            var answerDto = createDto.Answers.SingleOrDefault(a => a.QuestionId == question.Id);
-            if (answerDto == null)
-            {
-                if (question.IsRequired)
-                    throw new NullReferenceException($"Question \"{question.Label}\" is required");
+            var question = form.Questions.SingleOrDefault(q => q.Id == answerDto.QuestionId);
+            if (question == null)
                 continue;
-            }
+
+            if (question.Type != QuestionTypes.Checkbox && answerQuestionIds.Contains(question.Id))
+                continue;
             
             answers.Add(Answer.Create(answerDto.Value, question));
+            answerQuestionIds.Add(question.Id);
         }
+
+        var requiredQuestionsMissing = form.Questions.Any(q => q.IsRequired && !answerQuestionIds.Contains(q.Id));
+        if (requiredQuestionsMissing)
+            throw new NullReferenceException($"Required questions not met with answer values");
         
         var submission = Submission.Create(createDto.FormId, answers);
         
