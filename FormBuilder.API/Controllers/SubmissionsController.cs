@@ -8,12 +8,19 @@ namespace FormBuilder.API.Controllers;
 [ApiController]
 public class SubmissionsController(ISubmissionService submissionService) : ControllerBase
 {
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Get(Guid id)
+    {
+        var submission = await submissionService.Get(id);
+        if (submission == null)
+            return NotFound();
+        return Ok(submission);
+    }
     
-
     [HttpPost]
     public async Task<IActionResult> SubmitForm([FromBody] CreateSubmissionDto createDto)
     {
         var result = await submissionService.Create(createDto);
-        return Ok(result);
+        return Ok();
     }
 }
