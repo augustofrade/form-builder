@@ -1,3 +1,4 @@
+using System.Collections;
 using FormBuilder.API.Models.Dto.SubmissionDtos.Create;
 using FormBuilder.Domain.Context;
 using FormBuilder.Domain.Forms;
@@ -7,11 +8,21 @@ namespace FormBuilder.API.Service;
 
 public interface ISubmissionService
 {
+    Task<Submission?> Get(Guid submissionId);
     Task<Submission> Create(CreateSubmissionDto createDto);
+    Task<List<Submission>> GetByFormId(Guid formId);
+    Task<List<Submission>> ListByFormId(Guid formId);
 }
 
 public class SubmissionService(ApplicationDbContext db, IFormService formService) : ISubmissionService
 {
+    public Task<Submission?> Get(Guid submissionId)
+    {
+        return db.Submission
+            .Include(s => s.Answers)
+            .FirstOrDefaultAsync(s => s.Id == submissionId);
+    }
+
     public async Task<Submission> Create(CreateSubmissionDto createDto)
     {
         var form = await formService.FormAggregate
@@ -43,5 +54,15 @@ public class SubmissionService(ApplicationDbContext db, IFormService formService
         await db.Submission.AddAsync(submission);
         await db.SaveChangesAsync();
         return submission;
+    }
+
+    public Task<List<Submission>> GetByFormId(Guid formId)
+    {
+        return db.Submission.Include(s => s.Answers).ThenInclude(a => a.Question).Where(s => s.FormId == formId).ToListAsync();
+    }
+
+    public Task<List<Submission>> ListByFormId(Guid formId)
+    {
+        return db.Submission.Where(s => s.FormId == formId).ToListAsync();
     }
 }
