@@ -11,6 +11,7 @@ public class Question : IAuditable
     // TODO: create different questionConstraint variations: numeric, textual, etc
     public QuestionConstraint? Constraints { get; set; }
     public QuestionTypes Type { get; private init; }
+    public int Order { get; private set; }
     public bool IsDeleted { get; private set; }
     public Guid FormId { get; private init; }
     public Form Form { get; private init; }
@@ -39,6 +40,11 @@ public class Question : IAuditable
     {
         Label = label;
         IsRequired = isRequired;
+    }
+
+    public void SetOrder(int order)
+    {
+        Order = order;
     }
 
     public void SetConstraints(QuestionConstraint? constraints)
