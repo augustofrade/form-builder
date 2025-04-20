@@ -19,6 +19,7 @@ public static class FormExtensions
                 Id = q.Id,
                 Label = q.Label,
                 Type = q.Type,
+                Order = q.Order,
                 IsRequired = q.IsRequired,
                 QuestionConstraint = q.Constraints == null ? null : new QuestionConstraintDto
                 {
@@ -33,7 +34,7 @@ public static class FormExtensions
                         Label = o.Label,
                     }).ToList()
                     : null
-            }).ToList()
+            }).OrderBy(q => q.Order).ToList()
         };
     }
 }
