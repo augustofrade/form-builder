@@ -42,12 +42,16 @@ public class FormsController(IFormService formService, ISubmissionService submis
     }
     
     [HttpGet("{id}/submissions")]
-    public async Task<IActionResult> GetSubmissions(Guid id)
+    public async Task<IActionResult> ListSubmissions(Guid id)
     {
         var submissions = await submissionService.ListByFormId(id);
         return Ok(submissions);
     }
-    
+
     [HttpGet("{id}/submissions/{submissionId}")]
-    public 
+    public async Task<IActionResult> GetSubmission(Guid id, Guid submissionId)
+    {
+        var submissionDetails = await submissionService.GetWithFormDetails(id, submissionId);
+        return Ok(submissionDetails);
+    }
 }
