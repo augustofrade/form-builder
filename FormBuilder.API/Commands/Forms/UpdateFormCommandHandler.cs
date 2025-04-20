@@ -33,6 +33,8 @@ public class UpdateFormCommandHandler : IUpdateFormCommandHandler
             HandleUpdateQuestions(form, updateDto, deletedQuestions);
         }
 
+        HandleSortQuestions(form);
+
         return true;
     }
 
@@ -52,6 +54,7 @@ public class UpdateFormCommandHandler : IUpdateFormCommandHandler
         foreach(var q in createQuestionDtos)
         {
             var question = Question.Create(q.Label, q.Type, q.IsRequired);
+            question.SetOrder(q.Order);
 
             if (q.Constraint != null)
             {
@@ -92,6 +95,11 @@ public class UpdateFormCommandHandler : IUpdateFormCommandHandler
     {
         // TODO: make optional parameters on Dto & entity Update method
         question.Update(questionToUpdate.Label, questionToUpdate.IsRequired);
+        
+        // pseudo question order: the questions are sorted and the "Order" value really defined
+        // at the end of the command.
+        if(questionToUpdate.Order.HasValue)
+            question.SetOrder(questionToUpdate.Order.Value);
 
         if (question.Type != QuestionTypes.Checkbox &&
             question.Type != QuestionTypes.Radio &&
@@ -128,6 +136,16 @@ public class UpdateFormCommandHandler : IUpdateFormCommandHandler
             }
             var newOption = QuestionOption.Create(currentOption.Value, currentOption.Label);
             question.AddOption(newOption);
+        }
+    }
+
+    private void HandleSortQuestions(Form form)
+    {
+        var i = 0;
+        foreach (var question in form.Questions.OrderBy(q => q.Order).ThenBy(q => q.Label))
+        {
+            question.SetOrder(i + 1);
+            i++;
         }
     }
 }
