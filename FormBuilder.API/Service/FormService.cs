@@ -16,6 +16,7 @@ public interface IFormService
     Task<FormDetailsDto?> GetForm(Guid id);
     Task<Form> SaveForm(CreateFormDto createDto);
     Task<Form> UpdateForm(Guid formId, UpdateFormDto updateDto);
+    Task<bool> DeleteForm(Guid formId);
 } 
 
 public class FormService(
@@ -125,5 +126,11 @@ public class FormService(
         
         await db.SaveChangesAsync();
         return form;
+    }
+
+    public async Task<bool> DeleteForm(Guid formId)
+    {
+        var deletedRows = await db.Form.Where(f => f.Id == formId).ExecuteDeleteAsync();
+        return deletedRows > 0;
     }
 }

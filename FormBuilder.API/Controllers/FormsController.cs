@@ -43,6 +43,13 @@ public class FormsController(
         var form = await formService.UpdateForm(id, dto);
         return Ok(form.ToDetailsDto());
     }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteForm(Guid id)
+    {
+        var result = await formService.DeleteForm(id);
+        return Ok(new { msg = "Form has been deleted successfully" });
+    }
     
     [HttpGet("{id}/submissions")]
     public async Task<IActionResult> ListSubmissions(Guid id)
