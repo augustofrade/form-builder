@@ -9,7 +9,7 @@ public interface IFormSubmissionService
     Task<FormSubmissionDto?> GetSubmissionWithFormDetails(Guid formId, Guid submissionId);
 }
 
-public class FomSubmissionService(ApplicationDbContext db) : IFormSubmissionService
+public class FormSubmissionService(ApplicationDbContext db) : IFormSubmissionService
 {
     public async Task<FormSubmissionDto?> GetSubmissionWithFormDetails(Guid formId, Guid submissionId)
     {
