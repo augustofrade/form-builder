@@ -1,8 +1,14 @@
+using System.Text;
 using FormBuilder.API.Commands.Forms;
+using FormBuilder.API.Infrastructure.Authentication;
 using FormBuilder.API.Infrastructure.Middleware;
 using FormBuilder.API.Service;
 using FormBuilder.Domain.Context;
+using FormBuilder.Domain.Users;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +20,8 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JWT"));
+
 // Add services to the container.
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -21,6 +29,35 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
         sqlOptions => sqlOptions.MigrationsAssembly("FormBuilder.API"));
 });
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
+    {
+        // TODO: change password strength
+        options.Password.RequireDigit = false;
+        options.Password.RequireLowercase = false;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequiredLength = 6;
+        
+        // options.SignIn.RequireConfirmedEmail = true;
+    })
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        var jwt =  builder.Configuration.GetSection("JWT").Get<JwtOptions>();
+        
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.PrivateKey))
+        };
+    });
 
 builder.Services.AddScoped<IFormService, FormService>();
 builder.Services.AddScoped<IUpdateFormCommandHandler, UpdateFormCommandHandler>();
@@ -50,6 +87,7 @@ app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
