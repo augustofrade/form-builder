@@ -1,9 +1,12 @@
 using FormBuilder.Domain.Forms;
+using FormBuilder.Domain.Users;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace FormBuilder.Domain.Context;
 
-public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
+public class ApplicationDbContext(DbContextOptions options) : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>(options)
 {
     public DbSet<Form> Form => Set<Form>();
     public DbSet<Question> Question => Set<Question>();
@@ -19,6 +22,7 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         
         modelBuilder.Entity<Question>()
             .OwnsOne(q => q.Constraints);

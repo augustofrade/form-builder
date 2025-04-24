@@ -30,7 +30,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         sqlOptions => sqlOptions.MigrationsAssembly("FormBuilder.API"));
 });
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
+builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
     {
         // TODO: change password strength
         options.Password.RequireDigit = false;
